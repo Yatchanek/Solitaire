@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://scripts/ace_slot.gd" type="Script" id=1]
+[ext_resource path="res://assets/cards/Blank.png" type="Texture" id=2]
+
+[node name="AceSlot" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -1450.0
+margin_bottom = -690.0
+size_flags_horizontal = 14
+size_flags_vertical = 14
+script = ExtResource( 1 )
+
+[node name="CardOuter" type="TextureRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+mouse_default_cursor_shape = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture = ExtResource( 2 )
+expand = true
+stretch_mode = 6

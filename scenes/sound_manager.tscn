@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://scripts/sound_manager.gd" type="Script" id=1]
+[ext_resource path="res://assets/sounds/card_place1.ogg" type="AudioStream" id=2]
+[ext_resource path="res://assets/sounds/card_place2.ogg" type="AudioStream" id=3]
+[ext_resource path="res://assets/sounds/card_slide_1.ogg" type="AudioStream" id=4]
+
+[node name="SoundManager" type="Node"]
+script = ExtResource( 1 )
+sounds = [ ExtResource( 2 ), ExtResource( 3 ), ExtResource( 4 ) ]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+volume_db = -15.0
+
+[node name="AudioStreamPlayer2" type="AudioStreamPlayer" parent="."]
+volume_db = -15.0
+
+[node name="AudioStreamPlayer3" type="AudioStreamPlayer" parent="."]
+volume_db = -15.0
+
+[node name="AudioStreamPlayer4" type="AudioStreamPlayer" parent="."]
+volume_db = -15.0
+
+[node name="AudioStreamPlayer5" type="AudioStreamPlayer" parent="."]
+volume_db = -15.0
+
+[node name="AudioStreamPlayer6" type="AudioStreamPlayer" parent="."]
+volume_db = -15.0

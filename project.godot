@@ -12,33 +12,28 @@ _global_script_classes=[ {
 "base": "Control",
 "class": "Card",
 "language": "GDScript",
-"path": "res://card_textured.gd"
-}, {
-"base": "Control",
-"class": "CardOld",
-"language": "GDScript",
-"path": "res://card.gd"
+"path": "res://scripts/card_textured.gd"
 }, {
 "base": "Resource",
 "class": "CardSlot",
 "language": "GDScript",
-"path": "res://card_slot.gd"
+"path": "res://scripts/card_slot.gd"
 } ]
 _global_script_class_icons={
 "Card": "",
-"CardOld": "",
 "CardSlot": ""
 }
 
 [application]
 
 config/name="Solitaire"
-run/main_scene="res://game.tscn"
+run/main_scene="res://scenes/game.tscn"
 config/icon="res://icon.png"
 
 [autoload]
 
-Globals="*res://Globals.tscn"
+Globals="*res://scenes/Globals.tscn"
+SoundManager="*res://scenes/sound_manager.tscn"
 
 [display]
 

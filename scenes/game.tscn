@@ -1,0 +1,254 @@
+[gd_scene load_steps=15 format=2]
+
+[ext_resource path="res://scenes/Board.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scripts/game.gd" type="Script" id=2]
+[ext_resource path="res://scenes/title_screen.tscn" type="PackedScene" id=3]
+[ext_resource path="res://assets/fonts/Kanit-Bold.ttf" type="DynamicFontData" id=4]
+
+[sub_resource type="DynamicFont" id=20]
+size = 200
+outline_size = 10
+use_filter = true
+extra_spacing_char = 20
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=2]
+size = 70
+use_filter = true
+font_data = ExtResource( 4 )
+
+[sub_resource type="StyleBoxFlat" id=16]
+bg_color = Color( 0.0196078, 0.501961, 0.0235294, 1 )
+border_width_left = 15
+border_width_top = 15
+border_width_right = 5
+border_width_bottom = 5
+border_blend = true
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
+expand_margin_left = 15.0
+expand_margin_right = 15.0
+expand_margin_top = 5.0
+expand_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxFlat" id=17]
+bg_color = Color( 0.0196078, 0.501961, 0.0196078, 1 )
+border_width_left = 15
+border_width_top = 15
+border_width_right = 5
+border_width_bottom = 5
+border_blend = true
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
+expand_margin_left = 15.0
+expand_margin_right = 15.0
+expand_margin_top = 5.0
+expand_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxFlat" id=18]
+bg_color = Color( 0.145098, 0.180392, 0.133333, 1 )
+border_width_left = 15
+border_width_top = 15
+border_width_right = 5
+border_width_bottom = 5
+border_blend = true
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
+expand_margin_left = 15.0
+expand_margin_right = 15.0
+expand_margin_top = 5.0
+expand_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxFlat" id=19]
+bg_color = Color( 0.188389, 0.316406, 0.0135956, 1 )
+border_width_left = 15
+border_width_top = 15
+border_width_right = 5
+border_width_bottom = 5
+border_blend = true
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
+expand_margin_left = 15.0
+expand_margin_right = 15.0
+expand_margin_top = 5.0
+expand_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxFlat" id=14]
+bg_color = Color( 0.5, 0.025, 0.025, 1 )
+border_width_left = 15
+border_width_top = 15
+border_width_right = 5
+border_width_bottom = 5
+border_blend = true
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
+expand_margin_left = 15.0
+expand_margin_right = 15.0
+expand_margin_top = 5.0
+expand_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxFlat" id=15]
+bg_color = Color( 0.5, 0.025, 0.025, 1 )
+border_width_left = 15
+border_width_top = 15
+border_width_right = 5
+border_width_bottom = 5
+border_blend = true
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
+expand_margin_left = 15.0
+expand_margin_right = 5.0
+expand_margin_top = 5.0
+expand_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxFlat" id=11]
+bg_color = Color( 0.25, 0.2, 0.2, 1 )
+border_width_left = 15
+border_width_top = 15
+border_width_right = 5
+border_width_bottom = 5
+border_blend = true
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
+expand_margin_left = 15.0
+expand_margin_right = 5.0
+expand_margin_top = 5.0
+expand_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxFlat" id=9]
+bg_color = Color( 0.25098, 0.0117647, 0.0117647, 1 )
+border_width_left = 15
+border_width_top = 15
+border_width_right = 5
+border_width_bottom = 5
+border_blend = true
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
+expand_margin_left = 15.0
+expand_margin_right = 15.0
+expand_margin_top = 5.0
+expand_margin_bottom = 5.0
+
+[node name="Game" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource( 2 )
+
+[node name="Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color( 0.0784314, 0.215686, 0.0352941, 1 )
+
+[node name="Board" parent="." instance=ExtResource( 1 )]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -637.5
+margin_top = -450.0
+margin_right = 637.5
+margin_bottom = 450.0
+
+[node name="Label" type="Label" parent="."]
+visible = false
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_top = -209.0
+margin_right = 819.0
+
+[node name="TitleScreen" parent="." instance=ExtResource( 3 )]
+
+[node name="Veil" type="ColorRect" parent="."]
+modulate = Color( 1, 1, 1, 0 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color( 0, 0, 0, 1 )
+
+[node name="GameWin" type="Control" parent="."]
+modulate = Color( 1, 1, 1, 0 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="GameWin"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -800.0
+margin_top = -152.0
+margin_right = 800.0
+margin_bottom = 152.0
+mouse_filter = 2
+custom_colors/default_color = Color( 0.666667, 0.0431373, 0.0431373, 1 )
+custom_fonts/normal_font = SubResource( 20 )
+bbcode_enabled = true
+bbcode_text = "[center][wave amp=25]Gratulacje![/wave][/center]"
+text = "Gratulacje!"
+
+[node name="Buttons" type="HBoxContainer" parent="GameWin"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -233.0
+margin_bottom = -108.0
+mouse_filter = 2
+custom_constants/separation = 200
+alignment = 1
+
+[node name="NewGame" type="Button" parent="GameWin/Buttons"]
+margin_left = 422.0
+margin_right = 749.0
+margin_bottom = 125.0
+focus_mode = 0
+mouse_default_cursor_shape = 2
+custom_colors/font_color_hover = Color( 0.133333, 0.12549, 0.12549, 1 )
+custom_fonts/font = SubResource( 2 )
+custom_styles/hover = SubResource( 16 )
+custom_styles/pressed = SubResource( 17 )
+custom_styles/disabled = SubResource( 18 )
+custom_styles/normal = SubResource( 19 )
+disabled = true
+enabled_focus_mode = 0
+text = "Nowa gra"
+
+[node name="Quit" type="Button" parent="GameWin/Buttons"]
+margin_left = 949.0
+margin_right = 1178.0
+margin_bottom = 125.0
+focus_mode = 0
+mouse_default_cursor_shape = 2
+custom_colors/font_color_hover = Color( 0.133333, 0.12549, 0.12549, 1 )
+custom_fonts/font = SubResource( 2 )
+custom_styles/hover = SubResource( 14 )
+custom_styles/pressed = SubResource( 15 )
+custom_styles/disabled = SubResource( 11 )
+custom_styles/normal = SubResource( 9 )
+disabled = true
+enabled_focus_mode = 0
+text = "Wyjdź"
+
+[connection signal="back_to_menu" from="Board" to="." method="_on_Board_back_to_menu"]
+[connection signal="game_won" from="Board" to="." method="_on_Board_game_won"]
+[connection signal="continue_game" from="TitleScreen" to="." method="_on_TitleScreen_continue_game"]
+[connection signal="new_game" from="TitleScreen" to="." method="_on_TitleScreen_new_game"]
+[connection signal="quit_game" from="TitleScreen" to="." method="_on_TitleScreen_quit_game"]

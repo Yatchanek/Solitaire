@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://scripts/board.gd" type="Script" id=2]
+
+[node name="Board" type="Control"]
+margin_right = 1275.0
+margin_bottom = 900.0
+mouse_filter = 2
+mouse_default_cursor_shape = 2
+script = ExtResource( 2 )
+
+[node name="Frames" type="Node2D" parent="."]
+
+[node name="HintTimer" type="Timer" parent="."]
+wait_time = 5.0
+one_shot = true
+
+[connection signal="timeout" from="HintTimer" to="." method="_on_HintTimer_timeout"]
