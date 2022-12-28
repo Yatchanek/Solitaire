@@ -37,7 +37,7 @@ func add_card(_card : Card, _position : Vector2, by_doubleclick : bool = false):
 		if !rect.has_point(_position) and !by_doubleclick:
 			_card.set_state(_card.State.RETURNING, _card.current_state)
 			emit_signal("card_rejected")
-			return
+
 		if is_empty():
 			if _card.value == 1:		
 				cards.append(_card)
@@ -45,7 +45,8 @@ func add_card(_card : Card, _position : Vector2, by_doubleclick : bool = false):
 					_card.emit_signal("move_to_top")
 				_card.move_to(self.position)
 				SoundManager.play_sound(SoundManager.CARD_SLIDE_1)
-				emit_signal("card_placed", _card, self)
+				if _card.slot_idx != self.index:
+					emit_signal("card_placed", _card, self)
 
 			else:
 				_card.set_state(_card.State.RETURNING, _card.current_state)
@@ -58,7 +59,8 @@ func add_card(_card : Card, _position : Vector2, by_doubleclick : bool = false):
 					_card.emit_signal("move_to_top")
 				_card.move_to(self.position)
 				SoundManager.play_sound(SoundManager.CARD_SLIDE_1)		
-				emit_signal("card_placed", _card, self)
+				if _card.slot_idx != self.index:
+					emit_signal("card_placed", _card, self)
 
 			else:
 				_card.set_state(_card.State.RETURNING, _card.current_state)
@@ -75,7 +77,8 @@ func add_card(_card : Card, _position : Vector2, by_doubleclick : bool = false):
 				_card.is_in_play = true
 				_card.move_to(self.position)
 				SoundManager.play_sound(SoundManager.CARD_SLIDE_1)
-				emit_signal("card_placed", _card, self)
+				if _card.slot_idx != self.index:
+					emit_signal("card_placed", _card, self)
 			else:
 				_card.set_state(_card.State.RETURNING, _card.current_state)
 				emit_signal("card_rejected")
@@ -90,12 +93,13 @@ func add_card(_card : Card, _position : Vector2, by_doubleclick : bool = false):
 				_card.is_in_play = true
 				_card.move_to(last_card.rect_global_position + Vector2.DOWN * Globals.OFFSET)
 				SoundManager.play_sound(SoundManager.CARD_SLIDE_1)
-				emit_signal("card_placed", _card, self)
-				return true
+				if _card.slot_idx != self.index:
+					emit_signal("card_placed", _card, self)
+
 			else:
 				_card.set_state(_card.State.RETURNING, _card.current_state)
 				emit_signal("card_rejected")
-				return false
+
 		
 func add_card_on_deal(_card : Card):
 	var last_card : Card
