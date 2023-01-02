@@ -1,212 +1,40 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://assets/fonts/Kanit-BoldItalic.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://scripts/title_screen.gd" type="Script" id=2]
 [ext_resource path="res://assets/fonts/Kanit-Bold.ttf" type="DynamicFontData" id=3]
 
 [sub_resource type="DynamicFont" id=20]
-size = 300
+size = 250
 outline_size = 20
 use_filter = true
 extra_spacing_char = 30
 font_data = ExtResource( 1 )
 
 [sub_resource type="DynamicFont" id=2]
-size = 70
+size = 60
 use_filter = true
 font_data = ExtResource( 3 )
 
-[sub_resource type="StyleBoxFlat" id=16]
-bg_color = Color( 0.0196078, 0.501961, 0.0235294, 1 )
-border_width_left = 15
-border_width_top = 15
-border_width_right = 5
-border_width_bottom = 5
-border_blend = true
-corner_radius_top_left = 25
-corner_radius_top_right = 25
-corner_radius_bottom_right = 25
-corner_radius_bottom_left = 25
-expand_margin_left = 15.0
-expand_margin_right = 15.0
-expand_margin_top = 5.0
-expand_margin_bottom = 5.0
+[sub_resource type="StyleBoxFlat" id=22]
+bg_color = Color( 0, 0, 0.12549, 1 )
+draw_center = false
 
-[sub_resource type="StyleBoxFlat" id=17]
-bg_color = Color( 0.0196078, 0.501961, 0.0196078, 1 )
-border_width_left = 15
-border_width_top = 15
-border_width_right = 5
-border_width_bottom = 5
-border_blend = true
-corner_radius_top_left = 25
-corner_radius_top_right = 25
-corner_radius_bottom_right = 25
-corner_radius_bottom_left = 25
-expand_margin_left = 15.0
-expand_margin_right = 15.0
-expand_margin_top = 5.0
-expand_margin_bottom = 5.0
+[sub_resource type="StyleBoxFlat" id=23]
+bg_color = Color( 0, 0, 0.12549, 1 )
+draw_center = false
 
-[sub_resource type="StyleBoxFlat" id=18]
-bg_color = Color( 0.145098, 0.180392, 0.133333, 1 )
-border_width_left = 15
-border_width_top = 15
-border_width_right = 5
-border_width_bottom = 5
-border_blend = true
-corner_radius_top_left = 25
-corner_radius_top_right = 25
-corner_radius_bottom_right = 25
-corner_radius_bottom_left = 25
-expand_margin_left = 15.0
-expand_margin_right = 15.0
-expand_margin_top = 5.0
-expand_margin_bottom = 5.0
+[sub_resource type="StyleBoxFlat" id=24]
+bg_color = Color( 0, 0, 0.12549, 1 )
+draw_center = false
 
-[sub_resource type="StyleBoxFlat" id=19]
-bg_color = Color( 0.188389, 0.316406, 0.0135956, 1 )
-border_width_left = 15
-border_width_top = 15
-border_width_right = 5
-border_width_bottom = 5
-border_blend = true
-corner_radius_top_left = 25
-corner_radius_top_right = 25
-corner_radius_bottom_right = 25
-corner_radius_bottom_left = 25
-expand_margin_left = 15.0
-expand_margin_right = 15.0
-expand_margin_top = 5.0
-expand_margin_bottom = 5.0
+[sub_resource type="StyleBoxFlat" id=25]
+bg_color = Color( 0, 0, 0.12549, 1 )
+draw_center = false
 
-[sub_resource type="StyleBoxFlat" id=12]
-bg_color = Color( 0.498039, 0.501961, 0.0196078, 1 )
-border_width_left = 15
-border_width_top = 15
-border_width_right = 5
-border_width_bottom = 5
-border_blend = true
-corner_radius_top_left = 25
-corner_radius_top_right = 25
-corner_radius_bottom_right = 25
-corner_radius_bottom_left = 25
-expand_margin_left = 15.0
-expand_margin_right = 5.0
-expand_margin_top = 5.0
-expand_margin_bottom = 5.0
-
-[sub_resource type="StyleBoxFlat" id=13]
-bg_color = Color( 0.498039, 0.501961, 0.0196078, 1 )
-border_width_left = 15
-border_width_top = 15
-border_width_right = 5
-border_width_bottom = 5
-border_blend = true
-corner_radius_top_left = 25
-corner_radius_top_right = 25
-corner_radius_bottom_right = 25
-corner_radius_bottom_left = 25
-expand_margin_left = 15.0
-expand_margin_right = 15.0
-expand_margin_top = 5.0
-expand_margin_bottom = 5.0
-
-[sub_resource type="StyleBoxFlat" id=10]
-bg_color = Color( 0.180392, 0.180392, 0.133333, 1 )
-border_width_left = 15
-border_width_top = 15
-border_width_right = 5
-border_width_bottom = 5
-border_blend = true
-corner_radius_top_left = 25
-corner_radius_top_right = 25
-corner_radius_bottom_right = 25
-corner_radius_bottom_left = 25
-expand_margin_left = 15.0
-expand_margin_right = 15.0
-expand_margin_top = 5.0
-expand_margin_bottom = 5.0
-
-[sub_resource type="StyleBoxFlat" id=5]
-bg_color = Color( 0.298039, 0.329412, 0.0196078, 1 )
-border_width_left = 15
-border_width_top = 15
-border_width_right = 5
-border_width_bottom = 5
-border_blend = true
-corner_radius_top_left = 25
-corner_radius_top_right = 25
-corner_radius_bottom_right = 25
-corner_radius_bottom_left = 25
-expand_margin_left = 15.0
-expand_margin_right = 15.0
-expand_margin_top = 5.0
-expand_margin_bottom = 5.0
-
-[sub_resource type="StyleBoxFlat" id=14]
-bg_color = Color( 0.5, 0.025, 0.025, 1 )
-border_width_left = 15
-border_width_top = 15
-border_width_right = 5
-border_width_bottom = 5
-border_blend = true
-corner_radius_top_left = 25
-corner_radius_top_right = 25
-corner_radius_bottom_right = 25
-corner_radius_bottom_left = 25
-expand_margin_left = 15.0
-expand_margin_right = 15.0
-expand_margin_top = 5.0
-expand_margin_bottom = 5.0
-
-[sub_resource type="StyleBoxFlat" id=15]
-bg_color = Color( 0.5, 0.025, 0.025, 1 )
-border_width_left = 15
-border_width_top = 15
-border_width_right = 5
-border_width_bottom = 5
-border_blend = true
-corner_radius_top_left = 25
-corner_radius_top_right = 25
-corner_radius_bottom_right = 25
-corner_radius_bottom_left = 25
-expand_margin_left = 15.0
-expand_margin_right = 5.0
-expand_margin_top = 5.0
-expand_margin_bottom = 5.0
-
-[sub_resource type="StyleBoxFlat" id=11]
-bg_color = Color( 0.25, 0.2, 0.2, 1 )
-border_width_left = 15
-border_width_top = 15
-border_width_right = 5
-border_width_bottom = 5
-border_blend = true
-corner_radius_top_left = 25
-corner_radius_top_right = 25
-corner_radius_bottom_right = 25
-corner_radius_bottom_left = 25
-expand_margin_left = 15.0
-expand_margin_right = 5.0
-expand_margin_top = 5.0
-expand_margin_bottom = 5.0
-
-[sub_resource type="StyleBoxFlat" id=9]
-bg_color = Color( 0.25098, 0.0117647, 0.0117647, 1 )
-border_width_left = 15
-border_width_top = 15
-border_width_right = 5
-border_width_bottom = 5
-border_blend = true
-corner_radius_top_left = 25
-corner_radius_top_right = 25
-corner_radius_bottom_right = 25
-corner_radius_bottom_left = 25
-expand_margin_left = 15.0
-expand_margin_right = 15.0
-expand_margin_top = 5.0
-expand_margin_bottom = 5.0
+[sub_resource type="StyleBoxFlat" id=21]
+bg_color = Color( 0, 0, 0.12549, 1 )
+draw_center = false
 
 [node name="TitleScreen" type="Control"]
 anchor_right = 1.0
@@ -218,73 +46,109 @@ script = ExtResource( 2 )
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-color = Color( 0.117647, 0.101961, 0.101961, 1 )
+color = Color( 0, 0, 0.12549, 1 )
 
 [node name="Label" type="RichTextLabel" parent="."]
 anchor_right = 1.0
-margin_left = -3000.0
-margin_right = -3000.0
-margin_bottom = 511.0
+margin_top = -45.0
+margin_bottom = 457.0
 custom_colors/default_color = Color( 0.666667, 0.0431373, 0.0431373, 1 )
 custom_fonts/normal_font = SubResource( 20 )
 bbcode_enabled = true
 bbcode_text = "[center][wave amp=150 freq=3]Pasjans[/wave][/center]"
 text = "Pasjans"
 
-[node name="Buttons" type="HBoxContainer" parent="."]
-modulate = Color( 1, 1, 1, 0 )
+[node name="Buttons" type="VBoxContainer" parent="."]
+anchor_left = 0.5
 anchor_top = 1.0
-anchor_right = 1.0
+anchor_right = 0.5
 anchor_bottom = 1.0
-margin_top = -233.0
-margin_bottom = -108.0
-custom_constants/separation = 200
+margin_left = -160.0
+margin_top = -525.0
+margin_right = 160.0
+custom_constants/separation = 40
 alignment = 1
 
 [node name="NewGame" type="Button" parent="Buttons"]
-margin_left = 134.0
-margin_right = 461.0
-margin_bottom = 125.0
+margin_top = 22.0
+margin_right = 320.0
+margin_bottom = 112.0
+rect_min_size = Vector2( 320, 76 )
+rect_pivot_offset = Vector2( 160, 38 )
 focus_mode = 0
 mouse_default_cursor_shape = 2
-custom_colors/font_color_hover = Color( 0.133333, 0.12549, 0.12549, 1 )
+size_flags_horizontal = 6
+custom_colors/font_color_disabled = Color( 0.329412, 0.329412, 0.329412, 1 )
+custom_colors/font_color = Color( 0.819608, 0.819608, 0.819608, 1 )
+custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
 custom_fonts/font = SubResource( 2 )
-custom_styles/hover = SubResource( 16 )
-custom_styles/pressed = SubResource( 17 )
-custom_styles/disabled = SubResource( 18 )
-custom_styles/normal = SubResource( 19 )
-disabled = true
+custom_styles/hover = SubResource( 22 )
+custom_styles/pressed = SubResource( 23 )
+custom_styles/focus = SubResource( 24 )
+custom_styles/disabled = SubResource( 25 )
+custom_styles/normal = SubResource( 21 )
 enabled_focus_mode = 0
 text = "Nowa gra"
 
 [node name="Continue" type="Button" parent="Buttons"]
-margin_left = 661.0
-margin_right = 1036.0
-margin_bottom = 125.0
+margin_top = 152.0
+margin_right = 320.0
+margin_bottom = 242.0
+rect_min_size = Vector2( 320, 76 )
+rect_pivot_offset = Vector2( 160, 38 )
 focus_mode = 0
 mouse_default_cursor_shape = 2
-custom_colors/font_color_hover = Color( 0.133333, 0.12549, 0.12549, 1 )
+size_flags_horizontal = 6
+custom_colors/font_color_disabled = Color( 0.329412, 0.329412, 0.329412, 1 )
+custom_colors/font_color = Color( 0.819608, 0.819608, 0.819608, 1 )
+custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
 custom_fonts/font = SubResource( 2 )
-custom_styles/hover = SubResource( 12 )
-custom_styles/pressed = SubResource( 13 )
-custom_styles/disabled = SubResource( 10 )
-custom_styles/normal = SubResource( 5 )
-disabled = true
+custom_styles/hover = SubResource( 22 )
+custom_styles/pressed = SubResource( 23 )
+custom_styles/focus = SubResource( 24 )
+custom_styles/disabled = SubResource( 25 )
+custom_styles/normal = SubResource( 21 )
 enabled_focus_mode = 0
 text = "Kontynuuj"
 
-[node name="Quit" type="Button" parent="Buttons"]
-margin_left = 1236.0
-margin_right = 1465.0
-margin_bottom = 125.0
+[node name="Options" type="Button" parent="Buttons"]
+margin_top = 282.0
+margin_right = 320.0
+margin_bottom = 372.0
+rect_min_size = Vector2( 320, 76 )
+rect_pivot_offset = Vector2( 160, 38 )
 focus_mode = 0
 mouse_default_cursor_shape = 2
-custom_colors/font_color_hover = Color( 0.133333, 0.12549, 0.12549, 1 )
+size_flags_horizontal = 6
+custom_colors/font_color_disabled = Color( 0.329412, 0.329412, 0.329412, 1 )
+custom_colors/font_color = Color( 0.819608, 0.819608, 0.819608, 1 )
+custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
 custom_fonts/font = SubResource( 2 )
-custom_styles/hover = SubResource( 14 )
-custom_styles/pressed = SubResource( 15 )
-custom_styles/disabled = SubResource( 11 )
-custom_styles/normal = SubResource( 9 )
-disabled = true
+custom_styles/hover = SubResource( 22 )
+custom_styles/pressed = SubResource( 23 )
+custom_styles/focus = SubResource( 24 )
+custom_styles/disabled = SubResource( 25 )
+custom_styles/normal = SubResource( 21 )
+enabled_focus_mode = 0
+text = "Ustawienia"
+
+[node name="Quit" type="Button" parent="Buttons"]
+margin_top = 412.0
+margin_right = 320.0
+margin_bottom = 502.0
+rect_min_size = Vector2( 320, 76 )
+rect_pivot_offset = Vector2( 160, 38 )
+focus_mode = 0
+mouse_default_cursor_shape = 2
+size_flags_horizontal = 6
+custom_colors/font_color_disabled = Color( 0.329412, 0.329412, 0.329412, 1 )
+custom_colors/font_color = Color( 0.819608, 0.819608, 0.819608, 1 )
+custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
+custom_fonts/font = SubResource( 2 )
+custom_styles/hover = SubResource( 22 )
+custom_styles/pressed = SubResource( 23 )
+custom_styles/focus = SubResource( 24 )
+custom_styles/disabled = SubResource( 25 )
+custom_styles/normal = SubResource( 21 )
 enabled_focus_mode = 0
 text = "Wyjdź"

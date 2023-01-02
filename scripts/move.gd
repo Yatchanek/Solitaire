@@ -31,7 +31,7 @@ func initialize(_card : Card, _slots : Array, _deck : Array, _pool : Array):
 		if slot_idx >= 0:
 			slot_from = slots[slot_idx]
 			card_idx = slot_from.cards.find(card)
-			if card_idx > 0:
+			if card_idx >= 0 and slot_from.cards[card_idx - 1].current_state == Card.State.NOT_FLIPPED:
 				card_flipped = slot_from.cards[card_idx - 1]
 		was_card_in_play = _card.is_in_play
 		was_card_in_deck = deck.has(card)
@@ -52,8 +52,7 @@ func undo():
 			_card.move_to(_card.rect_global_position + Vector2(Globals.MARGIN + Globals.SLOT_WIDTH, 0))
 		emit_signal("deck_flipped")
 		
-	else:
-			
+	else:	
 		if slot_to:
 			slot_to.remove_card(card)
 		if slot_from:
@@ -80,4 +79,5 @@ func undo():
 		if card_flipped:
 			card_flipped.set_state(Card.State.NOT_FLIPPED, card_flipped.current_state)	
 		
+		card.create_stack()
 		card.move_to(position_from)

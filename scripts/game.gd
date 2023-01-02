@@ -6,10 +6,23 @@ var quit_game : bool = false
 var continue_game : bool = false
 
 func _ready():
+	if !load_settings():
+		$Background.color = Globals.bkg_color
+	var stylebox = $Confirmation/Panel.get_stylebox("panel").duplicate()
+	stylebox.bg_color = Globals.bkg_color
+	stylebox.bg_color.v = max(stylebox.bg_color.v - 0.2, 0.05)
+	$Confirmation/Panel.add_stylebox_override("panel", stylebox)
 	for button in $GameWin/Buttons.get_children():
-		button.connect("pressed", self, "_on_Button_pressed", [button.name])
+		button.connect("pressed", self, "_on_WinGame_button_pressed", [button.name])
+		button.connect("mouse_entered", self, "_on_Button_hovered", [button])
+		button.connect("mouse_exited", self, "_on_Button_unhovered", [button])
 
+	for button in $Confirmation/Panel/MarginContainer/VBoxContainer/HBoxContainer.get_children():
+		button.connect("pressed", self, "_on_Confirmation_button_pressed", [button.name])
+	for button in $Buttons.get_children():
+		button.connect("pressed", self, "_on_Board_button_pressed", [button.name])
 
+	
 func start_transition():
 	var tw = create_tween()
 	tw.tween_property($Veil, "modulate:a", 1.0, 1.0)
@@ -28,22 +41,40 @@ func _on_Start_Tween_step_finished(idx : int):
 			else:
 				$TitleScreen.hide()
 		1:
-			
 			if !back_to_menu and !quit_game:
-				$Board.start(continue_game)
+				pass
 			elif quit_game:
+				$Options.save_settings()
 				get_tree().quit()
-				
+			else:
+				$Buttons.hide()
+				$Board.reset()
 		2: 
 			if back_to_menu:
 				back_to_menu = false
 				continue_game = false
-				$TitleScreen.slide_in()
-			
+			else:
+				$Board.start(continue_game)
+				$Buttons.show()
 
-func _on_Board_back_to_menu():
+func load_settings():
+	var f = File.new()
+	if f.file_exists("user://settings.dat"):
+		var err = f.open("user://settings.dat", File.READ)
+		if err == OK:
+			var settings_data = f.get_var()
+			if settings_data.has("card_design"):
+				Globals.card_design = settings_data["card_design"]
+			if settings_data.has("bkg_color"):
+				Globals.bkg_color = settings_data["bkg_color"]
+				$Background.color = settings_data["bkg_color"]
+			return true
+		return false			
+
+func back_to_menu():
 	back_to_menu = true
-	start_transition()
+	$Confirmation/Panel/MarginContainer/VBoxContainer/Label.text = "Czy na pewno chcesz wyjść do menu?"
+	$Confirmation.show()
 
 func _on_TitleScreen_quit_game():
 	quit_game = true
@@ -52,20 +83,49 @@ func _on_TitleScreen_quit_game():
 func _on_TitleScreen_continue_game():
 	continue_game = true
 	start_transition()
+	
+func _on_TitleScreen_options():
+	$Options.show()
 
 func _on_Game_won_message_shown():
 	for button in $GameWin/Buttons.get_children():
 		button.disabled = false
 
-func _on_Button_pressed(button_name):
+func _on_WinGame_button_pressed(button_name):
+	$GameWin.hide()
+	$GameWin.modulate.a = 0
 	for button in $GameWin/Buttons.get_children():
 		button.disabled = true
 	match button_name:
 		"NewGame":
+			$Board.reset()
 			start_transition()
 		"Quit":
+			$Board.reset()
 			back_to_menu = true
 			start_transition()
+			
+func _on_Confirmation_button_pressed(button_name):
+	match button_name:
+		"OK":
+			if back_to_menu == true:
+				$Board.save_layout()
+				start_transition()
+			else:
+				$Board.restart()
+			$Confirmation.hide()
+		"Cancel":
+			$Confirmation.hide()
+
+func _on_Board_button_pressed(button_name):
+	$Board.remove_frames()
+	match button_name:
+		"NewGame":
+			back_to_menu = false
+			$Confirmation/Panel/MarginContainer/VBoxContainer/Label.text = "Czy na pewno chcesz zacząć nową grę?"
+			$Confirmation.show()
+		"Quit":
+			back_to_menu()
 
 func _on_Board_game_won():
 	$GameWin.show()
@@ -77,3 +137,24 @@ func _on_Board_game_won():
 func _on_TitleScreen_new_game():
 	continue_game = false
 	start_transition()
+
+
+func _on_Button_hovered(button):
+	var tw = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_property(button, "rect_scale", Vector2(1.25, 1.25), 0.1)
+	
+func _on_Button_unhovered(button):
+	var tw = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_property(button, "rect_scale", Vector2.ONE, 0.1)
+
+
+func _on_Options_color_changed(_color):
+	$Background.color = _color
+	var stylebox = $Confirmation/Panel.get_stylebox("panel").duplicate()
+	stylebox.bg_color = _color
+	stylebox.bg_color.v = max(stylebox.bg_color.v - 0.2, 0.05)
+	$Confirmation/Panel.add_stylebox_override("panel", stylebox)
+
+func _on_Options_options_closed():
+	$TitleScreen.enable_buttons()
+

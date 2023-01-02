@@ -9,8 +9,6 @@ mouse_filter = 2
 mouse_default_cursor_shape = 2
 script = ExtResource( 2 )
 
-[node name="Frames" type="Node2D" parent="."]
-
 [node name="HintTimer" type="Timer" parent="."]
 wait_time = 5.0
 one_shot = true

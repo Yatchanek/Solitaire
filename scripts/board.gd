@@ -5,6 +5,7 @@ var slot_scene = preload("res://scenes/ace_slot.tscn")
 var frame_scene = preload("res://scenes/frame.tscn")
 var hint_frame_scene = preload("res://scenes/hint_frame.tscn")
 
+
 var cards : PoolVector2Array = []
 var pool : Array = []
 var slots : Array = []
@@ -12,12 +13,22 @@ var deck : Array = []
 var highlighted_cards : Array = []
 var moves_to_undo : Array = []
 
+
 var can_move : bool = true
 var dragged_from : int = -1
 var card_drawn_from_pool : bool = false
 var game_won = false
 
 var current_move : Move
+var current_state : int
+var cards_dealt : int
+
+
+enum State {
+	DEALING,
+	PLAYING,
+	GAME_END
+}
 
 signal back_to_menu
 signal game_won
@@ -25,9 +36,7 @@ signal game_won
 func _input(event):
 	if event is InputEventKey:
 		if event.pressed and event.scancode == KEY_ENTER:
-			reset()
-			yield(get_tree(), "idle_frame")
-			new_game()
+			restart()
 		if event.pressed and event.scancode == KEY_SPACE:
 			auto_put_on_foundation()
 		if event.pressed and event.scancode == KEY_H:
@@ -39,16 +48,20 @@ func _input(event):
 			emit_signal("back_to_menu")
 
 func _ready():
-	pass
+	current_state = State.GAME_END
+
+func restart():
+	reset()
+	yield(get_tree(), "idle_frame")
+	new_game()
 
 func reset():
 	cards  = []
 	pool = []
 	slots = []
 	deck = []
-	for card in get_children():
-		if card is Card:
-			card.queue_free()
+	for card in get_tree().get_nodes_in_group("Cards"):
+		card.queue_free()
 	remove_frames()
 	highlighted_cards = []
 	game_won = false
@@ -56,7 +69,7 @@ func reset():
 func new_game():
 	create_deck()
 	create_slots()
-	deal_cards()	
+	deal_cards()
 	$HintTimer.start()
 
 func continue_game():
@@ -82,8 +95,6 @@ func start(continue_game : bool = false):
 		continue_game()
 	else:
 		new_game()
-
-	
 
 func save_layout():
 	var game_data = {}
@@ -164,7 +175,7 @@ func restore_layout(game_data):
 		var card = deserialize_card(_card)
 		card.rect_position = Vector2(2 * Globals.MARGIN + Globals.SLOT_WIDTH, 20)
 		pool.append(card)
-		update_pool_layout()	
+	update_pool_layout()	
 		
 	var dir = Directory.new()
 	dir.remove("user://save.sav")
@@ -206,7 +217,9 @@ func create_slots():
 	add_child(begin_slot)
 	move_child(begin_slot, 0)
 
-func deal_cards():	
+func deal_cards():
+	current_state = State.DEALING
+	cards_dealt = 0
 	while cards.size() > 0:
 		var idx = randi() % cards.size()
 		var card_data = cards[idx]
@@ -224,9 +237,10 @@ func deal_cards():
 		for col in Globals.COLUMNS:
 			if col < row:
 				continue
-			var card = deck.pop_back()
+			var card : Card = deck.pop_back()
 
-			card.rect_position = Vector2(Globals.MARGIN + col * (Globals.SLOT_WIDTH + Globals.MARGIN), 250 + Globals.OFFSET * row)
+			#card.rect_position = Vector2(Globals.MARGIN + col * (Globals.SLOT_WIDTH + Globals.MARGIN), 250 + Globals.OFFSET * row)
+			card.move_to(rect_position + Vector2(Globals.MARGIN + col * (Globals.SLOT_WIDTH + Globals.MARGIN), 250 + Globals.OFFSET * row))
 			card.emit_signal("move_to_top")
 
 			slots[col].add_card_on_deal(card)
@@ -234,10 +248,13 @@ func deal_cards():
 			if col == row:
 				card.set_state(card.State.IDLE, card.current_state)
 			else: 
-				card.set_state(card.State.NOT_FLIPPED, card.current_state)		
+				card.set_state(card.State.NOT_FLIPPED, card.current_state)					
+			yield(get_tree(), "idle_frame")
 
 	update_label()
-	
+	#current_state = State.PLAYING
+
+		
 func determine_slot(_position):
 	var slot : int
 	if _position.y < 250:
@@ -255,12 +272,11 @@ func determine_slot(_position):
 
 func check_against_ace_slots(_card : Card): 
 	var suitable_slot : int = - 1
-	var empty_slot : int = - 1
 	for i in Globals.ACE_SLOTS:
 		var checked_slot = slots[Globals.COLUMNS + i]
 		if _card.value == 1:
-			if checked_slot.is_empty() and empty_slot < 0:
-				empty_slot = i + Globals.COLUMNS
+			if checked_slot.is_empty():
+				suitable_slot = i + Globals.COLUMNS
 				break
 		else:
 			if checked_slot.is_empty():
@@ -270,8 +286,6 @@ func check_against_ace_slots(_card : Card):
 				if last_card.suit == _card.suit and last_card.value == _card.value - 1:
 					suitable_slot = i + Globals.COLUMNS
 					break
-	if suitable_slot < Globals.COLUMNS:
-		suitable_slot = empty_slot
 
 	return suitable_slot
 
@@ -289,7 +303,6 @@ func restore_deck():
 	while pool.size():
 		var card : Card = pool.pop_back()
 		deck.append(card)
-		
 		card.move_to(rect_position + Vector2(Globals.MARGIN, 20))
 
 
@@ -314,28 +327,14 @@ func auto_put_on_foundation():
 				if _on_Put_on_foundation(card):
 					move_found = true
 					update_label()
-#
-#				var suitable_slot = check_against_ace_slots(card)
-#				if suitable_slot >= Globals.COLUMNS:
-#					dragged_from = i
-#					card.dragged_from = i
-#					slots[i].remove_card(card)
-#					slots[suitable_slot].add_card(card, slots[suitable_slot].position + Vector2(50, 50), true)
-#					move_found = true
-#					update_label()
-#					#break
+
 		if !move_found and pool.size() > 0:
 			var card : Card = pool[pool.size() - 1]
 			if _on_Put_on_foundation(card):
 				pool.erase(card)
-#			var suitable_slot = check_against_ace_slots(card)
-#			if suitable_slot >= Globals.COLUMNS:
-#				pool.erase(card)
-#
-#				#card.move_to_slot(ace_slots[suitable_slot])
-#				slots[suitable_slot].add_card(card, slots[suitable_slot].position + Vector2(50, 50), true)
 				move_found = true
 				update_label()		
+				
 	if move_found:
 		remove_frames()
 		yield(get_tree(), "idle_frame")
@@ -351,6 +350,7 @@ func check_for_win():
 		can_move = false
 		game_won = true
 		emit_signal("game_won")
+		current_state = State.GAME_END
 
 func update_label():
 	var string = ""
@@ -371,7 +371,7 @@ func update_label():
 		string += card.values[card.value] + card.suits[card.suit] + " "
 
 	get_parent().get_node("Label").text = string
-
+	
 func update_pool_layout():
 	if pool.size() > 2:
 		pool[pool.size() - 2].move_to(rect_position + Vector2(3 * Globals.MARGIN  + Globals.SLOT_WIDTH, 20))
@@ -380,7 +380,10 @@ func update_pool_layout():
 		pool[pool.size() - 1].emit_signal("move_to_top")
 		for i in range(pool.size() - 2):
 			pool[i].rect_position = Vector2(2 * Globals.MARGIN + Globals.SLOT_WIDTH, 20)	
-
+	elif pool.size() == 2:
+		pool[pool.size() - 1].move_to(rect_position + Vector2(3 * Globals.MARGIN  + Globals.SLOT_WIDTH, 20))
+		pool[pool.size() - 1].emit_signal("move_to_top")		
+	
 func find_hint():
 	remove_frames()
 	var begin_card : Card
@@ -459,7 +462,6 @@ func find_hint():
 	
 		
 func show_hint(begin_card : Card, target_card : Card, target_slot : CardSlot):
-
 	if begin_card:
 		begin_card.toggle_hint()	
 		if target_card:
@@ -467,11 +469,13 @@ func show_hint(begin_card : Card, target_card : Card, target_slot : CardSlot):
 		elif target_slot:
 			var frame = hint_frame_scene.instance()
 			frame.position = target_slot.position - rect_position
-			$Frames.add_child(frame)
+			frame.add_to_group("Frames")
+			add_child(frame)
 	else:
 		var frame = hint_frame_scene.instance()
 		frame.position = Vector2(Globals.MARGIN, 20)
-		$Frames.add_child(frame)
+		frame.add_to_group("Frames")
+		add_child(frame)
 	
 func _on_Card_in_pool(_card : Card):
 	remove_frames()
@@ -496,11 +500,11 @@ func _on_Card_in_pool(_card : Card):
 		if moves_to_undo.size() > 20:
 			moves_to_undo.pop_front()
 	pool.append(_card)
-	#update_pool_layout()
 	update_label()
 
 func remove_frames():
-	for frame in $Frames.get_children():
+	for frame in get_tree().get_nodes_in_group("Frames"):
+		frame.remove_from_group("Frames")
 		frame.queue_free()
 	for card in highlighted_cards:
 		if card != null:
@@ -511,16 +515,15 @@ func _on_Card_move_to_top(_card):
 	move_child(_card, get_child_count())
 
 func _on_Card_dragged(_card, _position):
-
 	current_move = Move.new()
 	current_move.initialize(_card, slots, deck, pool)
 	current_move.connect("card_back_in_pool", self, "update_pool_layout")
-	if _card.is_in_play:
-		var slot_num = determine_slot(_position)
-		var slot : CardSlot = slots[slot_num]
-		dragged_from = slot_num
-		_card.dragged_from = slot_num
+	if _card.slot_idx >= 0:
+		var slot : CardSlot = slots[_card.slot_idx]
 		slot.remove_card(_card)
+	dragged_from = _card.slot_idx
+	_card.dragged_from = _card.slot_idx
+		
 	if _card in pool:
 		card_drawn_from_pool = true
 		pool.erase(_card)
@@ -534,14 +537,15 @@ func _on_Card_changed_slots(_card : Card, slot : CardSlot):
 		moves_to_undo.append(current_move)
 		if moves_to_undo.size() > 20:
 			moves_to_undo.pop_front()
-	_card.slot_idx = slot.index
+		#update_shadows()
+	_card.set_slot_idx(slot.index)
 
 func _on_Card_dropped(_card : Card, _position : Vector2):
 	var slot_num : int = determine_slot(_position)
-	var	slot = slots[slot_num]
 	if slot_num < 0:
 		_card.set_state(_card.State.RETURNING, _card.previous_state)
 	else:
+		var	slot = slots[slot_num]
 		slot.add_card(_card, _position)
 		
 func _on_Card_drawn(_card : Card):
@@ -551,21 +555,22 @@ func _on_Card_drawn(_card : Card):
 		pool.append(_card)
 
 func _on_Put_on_foundation(_card : Card):
-	$HintTimer.stop()
-	_card.move_start_position = _card.rect_global_position
-	current_move = Move.new()
-	current_move.initialize(_card, slots, deck, pool)
-	current_move.connect("card_back_in_pool", self, "update_pool_layout")
-	if _card in pool:
-		pool.pop_back()
-		card_drawn_from_pool = true
 	var suitable_slot : int = check_against_ace_slots(_card)
 	if suitable_slot >= Globals.COLUMNS:
+		$HintTimer.stop()
+		_card.move_start_position = _card.rect_global_position
+		current_move = Move.new()
+		current_move.initialize(_card, slots, deck, pool)
+		current_move.connect("card_back_in_pool", self, "update_pool_layout")
+		if _card in pool:
+			pool.resize(pool.size() - 1)
+			card_drawn_from_pool = true
 		remove_frames()
 		dragged_from = _card.slot_idx
 		_card.dragged_from = _card.slot_idx
-		var slot : CardSlot = slots[dragged_from]
-		slot.remove_card(_card)
+		if dragged_from >= 0:
+			var slot : CardSlot = slots[dragged_from]
+			slot.remove_card(_card)
 		slots[suitable_slot].add_card(_card, slots[suitable_slot].position + Vector2(50, 50), true)
 		return true
 	else:
@@ -582,23 +587,33 @@ func _on_Card_move_started():
 	can_move = false
 	
 func _on_Card_move_ended(_card):
-	if _card in pool and _card.is_in_play:
-		pool.erase(_card)
-	if card_drawn_from_pool:
-		update_pool_layout()
-		card_drawn_from_pool = false
-	if _card.slot_idx >= Globals.COLUMNS or _card.slot_idx != _card.dragged_from:
-		flip_card(_card.dragged_from)
-	if _card.slot_idx >= Globals.COLUMNS:
-		var frame = frame_scene.instance()
-		frame.position = _card.rect_position + Vector2(Globals.SLOT_WIDTH, Globals.SLOT_HEIGHT) * 0.5
-		add_child(frame)
-		check_for_win()
-	
-	$HintTimer.start()
-	update_label()
-	can_move = true
+	if current_state == State.DEALING:
+		cards_dealt += 1
+		if cards_dealt == Globals.COLUMNS * Globals.COLUMNS - 21:
+			for card in get_tree().get_nodes_in_group("Cards"):
+				if card.current_state == Card.State.NOT_FLIPPED:
+					card.set_block_signals(true)
+			current_state = State.PLAYING
+
+	elif current_state == State.PLAYING:
+		if _card in pool and _card.is_in_play:
+			pool.erase(_card)
+		if card_drawn_from_pool:
+			update_pool_layout()
+			card_drawn_from_pool = false
+		if _card.slot_idx >= Globals.COLUMNS or _card.slot_idx != _card.dragged_from:
+			flip_card(_card.dragged_from)
+		if _card.slot_idx >= Globals.COLUMNS:
+			var frame = frame_scene.instance()
+			frame.position = _card.rect_position + Vector2(Globals.SLOT_WIDTH, Globals.SLOT_HEIGHT) * 0.5
+			add_child(frame)
+			check_for_win()
+		$HintTimer.start()
+		update_label()
+
+		can_move = true
+
 
 func _on_HintTimer_timeout():
-	if !game_won:
+	if !game_won and slots.size() > 0:
 		find_hint()
