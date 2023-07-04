@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://assets/dash_line.png" type="Texture" id=1]
+[ext_resource path="res://assets/dash_line.png" type="Texture2D" id=1]
 
 [sub_resource type="Shader" id=1]
 code = "shader_type canvas_item;
@@ -16,6 +16,6 @@ shader = SubResource( 1 )
 
 [node name="HintFrame" type="Line2D"]
 material = SubResource( 2 )
-points = PoolVector2Array( 0, 0, 150, 0, 150, 210, 0, 210, 0, 0 )
+points = PackedVector2Array( 0, 0, 150, 0, 150, 210, 0, 210, 0, 0 )
 texture = ExtResource( 1 )
 texture_mode = 1

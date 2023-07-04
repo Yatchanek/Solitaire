@@ -1,17 +1,17 @@
 [gd_scene load_steps=11 format=2]
 
-[ext_resource path="res://assets/fonts/Kanit-BoldItalic.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://assets/fonts/Kanit-BoldItalic.ttf" type="FontFile" id=1]
 [ext_resource path="res://scripts/title_screen.gd" type="Script" id=2]
-[ext_resource path="res://assets/fonts/Kanit-Bold.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://assets/fonts/Kanit-Bold.ttf" type="FontFile" id=3]
 
-[sub_resource type="DynamicFont" id=20]
+[sub_resource type="FontFile" id=20]
 size = 250
 outline_size = 20
 use_filter = true
 extra_spacing_char = 30
 font_data = ExtResource( 1 )
 
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="FontFile" id=2]
 size = 60
 use_filter = true
 font_data = ExtResource( 3 )
@@ -50,12 +50,12 @@ color = Color( 0, 0, 0.12549, 1 )
 
 [node name="Label" type="RichTextLabel" parent="."]
 anchor_right = 1.0
-margin_top = -45.0
-margin_bottom = 457.0
-custom_colors/default_color = Color( 0.666667, 0.0431373, 0.0431373, 1 )
-custom_fonts/normal_font = SubResource( 20 )
+offset_top = -45.0
+offset_bottom = 457.0
+theme_override_colors/default_color = Color( 0.666667, 0.0431373, 0.0431373, 1 )
+theme_override_fonts/normal_font = SubResource( 20 )
 bbcode_enabled = true
-bbcode_text = "[center][wave amp=150 freq=3]Pasjans[/wave][/center]"
+text = "[center][wave amp=150 freq=3]Pasjans[/wave][/center]"
 text = "Pasjans"
 
 [node name="Buttons" type="VBoxContainer" parent="."]
@@ -63,92 +63,92 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-margin_left = -160.0
-margin_top = -525.0
-margin_right = 160.0
-custom_constants/separation = 40
+offset_left = -160.0
+offset_top = -525.0
+offset_right = 160.0
+theme_override_constants/separation = 40
 alignment = 1
 
 [node name="NewGame" type="Button" parent="Buttons"]
-margin_top = 22.0
-margin_right = 320.0
-margin_bottom = 112.0
-rect_min_size = Vector2( 320, 76 )
-rect_pivot_offset = Vector2( 160, 38 )
+offset_top = 22.0
+offset_right = 320.0
+offset_bottom = 112.0
+custom_minimum_size = Vector2( 320, 76 )
+pivot_offset = Vector2( 160, 38 )
 focus_mode = 0
 mouse_default_cursor_shape = 2
 size_flags_horizontal = 6
-custom_colors/font_color_disabled = Color( 0.329412, 0.329412, 0.329412, 1 )
-custom_colors/font_color = Color( 0.819608, 0.819608, 0.819608, 1 )
-custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
-custom_fonts/font = SubResource( 2 )
-custom_styles/hover = SubResource( 22 )
-custom_styles/pressed = SubResource( 23 )
-custom_styles/focus = SubResource( 24 )
-custom_styles/disabled = SubResource( 25 )
-custom_styles/normal = SubResource( 21 )
-enabled_focus_mode = 0
-text = "Nowa gra"
+theme_override_colors/font_disabled_color = Color( 0.329412, 0.329412, 0.329412, 1 )
+theme_override_colors/font_color = Color( 0.819608, 0.819608, 0.819608, 1 )
+theme_override_colors/font_hover_color = Color( 1, 1, 1, 1 )
+theme_override_fonts/font = SubResource( 2 )
+theme_override_styles/hover = SubResource( 22 )
+theme_override_styles/pressed = SubResource( 23 )
+theme_override_styles/focus = SubResource( 24 )
+theme_override_styles/disabled = SubResource( 25 )
+theme_override_styles/normal = SubResource( 21 )
+focus_mode = 0
+text = "New Game"
 
 [node name="Continue" type="Button" parent="Buttons"]
-margin_top = 152.0
-margin_right = 320.0
-margin_bottom = 242.0
-rect_min_size = Vector2( 320, 76 )
-rect_pivot_offset = Vector2( 160, 38 )
+offset_top = 152.0
+offset_right = 320.0
+offset_bottom = 242.0
+custom_minimum_size = Vector2( 320, 76 )
+pivot_offset = Vector2( 160, 38 )
 focus_mode = 0
 mouse_default_cursor_shape = 2
 size_flags_horizontal = 6
-custom_colors/font_color_disabled = Color( 0.329412, 0.329412, 0.329412, 1 )
-custom_colors/font_color = Color( 0.819608, 0.819608, 0.819608, 1 )
-custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
-custom_fonts/font = SubResource( 2 )
-custom_styles/hover = SubResource( 22 )
-custom_styles/pressed = SubResource( 23 )
-custom_styles/focus = SubResource( 24 )
-custom_styles/disabled = SubResource( 25 )
-custom_styles/normal = SubResource( 21 )
-enabled_focus_mode = 0
-text = "Kontynuuj"
+theme_override_colors/font_disabled_color = Color( 0.329412, 0.329412, 0.329412, 1 )
+theme_override_colors/font_color = Color( 0.819608, 0.819608, 0.819608, 1 )
+theme_override_colors/font_hover_color = Color( 1, 1, 1, 1 )
+theme_override_fonts/font = SubResource( 2 )
+theme_override_styles/hover = SubResource( 22 )
+theme_override_styles/pressed = SubResource( 23 )
+theme_override_styles/focus = SubResource( 24 )
+theme_override_styles/disabled = SubResource( 25 )
+theme_override_styles/normal = SubResource( 21 )
+focus_mode = 0
+text = "Continue"
 
 [node name="Options" type="Button" parent="Buttons"]
-margin_top = 282.0
-margin_right = 320.0
-margin_bottom = 372.0
-rect_min_size = Vector2( 320, 76 )
-rect_pivot_offset = Vector2( 160, 38 )
+offset_top = 282.0
+offset_right = 320.0
+offset_bottom = 372.0
+custom_minimum_size = Vector2( 320, 76 )
+pivot_offset = Vector2( 160, 38 )
 focus_mode = 0
 mouse_default_cursor_shape = 2
 size_flags_horizontal = 6
-custom_colors/font_color_disabled = Color( 0.329412, 0.329412, 0.329412, 1 )
-custom_colors/font_color = Color( 0.819608, 0.819608, 0.819608, 1 )
-custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
-custom_fonts/font = SubResource( 2 )
-custom_styles/hover = SubResource( 22 )
-custom_styles/pressed = SubResource( 23 )
-custom_styles/focus = SubResource( 24 )
-custom_styles/disabled = SubResource( 25 )
-custom_styles/normal = SubResource( 21 )
-enabled_focus_mode = 0
-text = "Ustawienia"
+theme_override_colors/font_disabled_color = Color( 0.329412, 0.329412, 0.329412, 1 )
+theme_override_colors/font_color = Color( 0.819608, 0.819608, 0.819608, 1 )
+theme_override_colors/font_hover_color = Color( 1, 1, 1, 1 )
+theme_override_fonts/font = SubResource( 2 )
+theme_override_styles/hover = SubResource( 22 )
+theme_override_styles/pressed = SubResource( 23 )
+theme_override_styles/focus = SubResource( 24 )
+theme_override_styles/disabled = SubResource( 25 )
+theme_override_styles/normal = SubResource( 21 )
+focus_mode = 0
+text = "Settings"
 
 [node name="Quit" type="Button" parent="Buttons"]
-margin_top = 412.0
-margin_right = 320.0
-margin_bottom = 502.0
-rect_min_size = Vector2( 320, 76 )
-rect_pivot_offset = Vector2( 160, 38 )
+offset_top = 412.0
+offset_right = 320.0
+offset_bottom = 502.0
+custom_minimum_size = Vector2( 320, 76 )
+pivot_offset = Vector2( 160, 38 )
 focus_mode = 0
 mouse_default_cursor_shape = 2
 size_flags_horizontal = 6
-custom_colors/font_color_disabled = Color( 0.329412, 0.329412, 0.329412, 1 )
-custom_colors/font_color = Color( 0.819608, 0.819608, 0.819608, 1 )
-custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
-custom_fonts/font = SubResource( 2 )
-custom_styles/hover = SubResource( 22 )
-custom_styles/pressed = SubResource( 23 )
-custom_styles/focus = SubResource( 24 )
-custom_styles/disabled = SubResource( 25 )
-custom_styles/normal = SubResource( 21 )
-enabled_focus_mode = 0
-text = "Wyjdź"
+theme_override_colors/font_disabled_color = Color( 0.329412, 0.329412, 0.329412, 1 )
+theme_override_colors/font_color = Color( 0.819608, 0.819608, 0.819608, 1 )
+theme_override_colors/font_hover_color = Color( 1, 1, 1, 1 )
+theme_override_fonts/font = SubResource( 2 )
+theme_override_styles/hover = SubResource( 22 )
+theme_override_styles/pressed = SubResource( 23 )
+theme_override_styles/focus = SubResource( 24 )
+theme_override_styles/disabled = SubResource( 25 )
+theme_override_styles/normal = SubResource( 21 )
+focus_mode = 0
+text = "Exit"

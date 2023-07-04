@@ -1,8 +1,6 @@
 extends Node
 
-export (Array, AudioStream) var sounds
-
-onready var channels = get_children()
+@onready var audioPlayer: AudioStreamPlayer = AudioStreamPlayer.new()
 
 enum {
 	CARD_PLACE_1,
@@ -10,13 +8,17 @@ enum {
 	CARD_SLIDE_1,
 	CARD_SLIDE_2
 }
-# Called when the node enters the scene tree for the first time.
+
 func _ready():
 	pass
 
-func play_sound(_index : int):
-	for channel in channels:
-		if !channel.is_playing():
-			channel.stream = sounds[_index]
-			channel.play()
-			break
+func play_sound(index: int):
+	match index:
+		CARD_PLACE_1:
+			$AudioStreamPlayer1.play()
+		CARD_PLACE_2:
+			$AudioStreamPlayer2.play()
+		CARD_SLIDE_1:
+			$AudioStreamPlayer3.play()
+		CARD_SLIDE_2:
+			$AudioStreamPlayer4.play()

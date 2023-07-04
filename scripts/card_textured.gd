@@ -50,7 +50,7 @@ var board
 
 signal dragged
 signal dropped
-signal move_to_top
+signal move_before
 signal put_on_ace_slot
 signal move_started
 signal move_ended
@@ -115,13 +115,13 @@ func set_state(_next_state, _current_state):
 
 func _ready():
 	board = get_parent()
-	connect("dragged", board, "_on_Card_dragged")
-	connect("dropped", board, "_on_Card_dropped")
-	connect("put_on_ace_slot", board, "_on_Put_on_foundation")
-	connect("move_started", board, "_on_Card_move_started")
-	connect("move_ended", board, "_on_Card_move_ended")
-	connect("move_to_top", board, "_on_Card_move_to_top", [self])
-	connect("in_pool", board, "_on_Card_in_pool")
+	connect("dragged", Callable(board, "_on_Card_dragged"))
+	connect("dropped", Callable(board, "_on_Card_dropped"))
+	connect("put_on_ace_slot", Callable(board, "_on_Put_on_foundation"))
+	connect("move_started", Callable(board, "_on_Card_move_started"))
+	connect("move_ended", Callable(board, "_on_Card_move_ended"))
+	connect("move_before", Callable(board, "_on_Card_move_to_top").bind(self))
+	connect("in_pool", Callable(board, "_on_Card_in_pool"))
 	set_process(false)
 	add_to_group("Cards")
 	slot_idx = -1
@@ -130,11 +130,11 @@ func _process(_delta):
 	match current_state:
 		State.CLICKED:
 			if Time.get_ticks_msec() - drag_start_time > 100:
-				move_start_position = rect_global_position
+				move_start_position = global_position
 				set_state(State.DRAGGED, current_state)
 
 		State.DRAGGED:
-			rect_global_position = get_global_mouse_position() - click_position
+			global_position = get_global_mouse_position() - click_position
 			move_stack()
 			
 		State.RETURNING, State.MOVING:
@@ -154,12 +154,12 @@ func set_slot_idx(_idx : int):
 	
 func create_stack():
 	stack = [self]
-	emit_signal("move_to_top")
+	emit_signal("move_before")
 	if lower_card:
 		var card_to_append = lower_card
 		while card_to_append:
 			stack.append(card_to_append)
-			card_to_append.emit_signal("move_to_top")
+			card_to_append.emit_signal("move_before")
 			card_to_append = card_to_append.lower_card
 	stack_size = stack.size()
 
@@ -167,10 +167,10 @@ func move_stack():
 	if stack_size <= 1:
 		return
 	for i in range(1, stack_size):
-		stack[i].rect_global_position = stack[i - 1].rect_global_position + Vector2.DOWN * Globals.OFFSET
+		stack[i].global_position = stack[i - 1].global_position + Vector2.DOWN * Globals.OFFSET
 
 func request_move_to_top():
-	emit_signal("move_to_top")
+	emit_signal("move_before")
 	if lower_card:
 		lower_card.request_move_to_top()
 
@@ -179,14 +179,14 @@ func move_to(_position):
 	if board.current_state == board.State.PLAYING:
 		set_state(State.MOVING, current_state)
 		if !lower_card and !board.pool.has(self):
-			emit_signal("move_to_top")
+			emit_signal("move_before")
 		emit_signal("move_started")
 	var tw = create_tween()
-	tw.connect("finished", self, "_on_Move_to_ended")
-	tw.tween_property(self, "rect_global_position", _position, Globals.MOVE_SPEED)	
+	tw.connect("finished", Callable(self, "_on_Move_to_ended"))
+	tw.tween_property(self, "global_position", _position, Globals.MOVE_SPEED)	
 
 func move_along(_card : Card):
-	rect_global_position = _card.rect_global_position + Vector2.DOWN * Globals.OFFSET
+	global_position = _card.global_position + Vector2.DOWN * Globals.OFFSET
 	if lower_card != null:
 		lower_card.move_along(self)
 
@@ -200,7 +200,7 @@ func _on_Move_to_ended():
 	if board.current_state == board.State.PLAYING:
 		if stack_size > 1:
 			move_stack()
-		if rect_position == Vector2(Globals.MARGIN, 20):
+		if position == Vector2(Globals.MARGIN, 20):
 			set_state(State.IN_DECK, current_state)
 			is_in_play = false
 		elif is_in_play:
@@ -216,7 +216,7 @@ func _on_Card_gui_input(event):
 	if board.can_move == false:
 		return
 	if event is InputEventMouseButton:
-		if event.pressed and event.button_index == BUTTON_LEFT:
+		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			match current_state:
 				State.IDLE, State.DRAWN:
 					if board.pool.has(self) and board.pool.find(self) != board.pool.size() - 1:
@@ -229,12 +229,12 @@ func _on_Card_gui_input(event):
 					set_state(State.CLICKED, current_state)
 				
 				State.IN_DECK:
-					move_start_position = rect_global_position
+					move_start_position = global_position
 					$CardOuter.texture = load(texture_path)
 					emit_signal("in_pool", self)
 
 	
-		if event.pressed and event.button_index == BUTTON_RIGHT:
+		if event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
 			if lower_card:
 				return
 			if current_state == State.IDLE or current_state == State.DRAWN:
@@ -242,7 +242,7 @@ func _on_Card_gui_input(event):
 				create_stack()
 				emit_signal("put_on_ace_slot", self)	
 						
-		if !event.pressed and event.button_index == BUTTON_LEFT:
+		if !event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			match current_state:
 				State.DRAGGED:
 					emit_signal("dropped", self, event.global_position)

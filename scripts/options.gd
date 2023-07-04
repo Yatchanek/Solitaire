@@ -7,21 +7,21 @@ func _ready():
 	
 	for button in $Panel/MarginContainer/VBoxContainer/HBoxContainer.get_children():
 		if button is Button:
-			button.connect("pressed", self, "_on_Button_pressed", [button.name])
-			button.connect("mouse_entered", self, "_on_Button_hovered", [button])
-			button.connect("mouse_exited", self, "_on_Button_unhovered", [button])
-	$Panel/OK.connect("pressed", self, "_on_Button_pressed", [$Panel/OK.name])
-	$Panel/OK.connect("mouse_entered", self, "_on_Button_hovered", [$Panel/OK])
-	$Panel/OK.connect("mouse_exited", self, "_on_Button_unhovered", [$Panel/OK])
+			button.connect("pressed", Callable(self, "_on_Button_pressed").bind(button.name))
+			button.connect("mouse_entered", Callable(self, "_on_Button_hovered").bind(button))
+			button.connect("mouse_exited", Callable(self, "_on_Button_unhovered").bind(button))
+	$Panel/OK.connect("pressed", Callable(self, "_on_Button_pressed").bind($Panel/OK.name))
+	$Panel/OK.connect("mouse_entered", Callable(self, "_on_Button_hovered").bind($Panel/OK))
+	$Panel/OK.connect("mouse_exited", Callable(self, "_on_Button_unhovered").bind($Panel/OK))
 
 func setup():
 	$Panel/MarginContainer/VBoxContainer/HBoxContainer/Card.texture = load("res://assets/cards" + str(Globals.card_design) + "/13_0.png")
 	$Panel/MarginContainer/VBoxContainer/HBoxContainer2/Border/Color.color = Globals.bkg_color
-	$Panel/MarginContainer/VBoxContainer/HBoxContainer3/FullScreen.pressed = OS.window_fullscreen
+	$Panel/MarginContainer/VBoxContainer/HBoxContainer3/FullScreen.button_pressed = ((get_window().mode == Window.MODE_EXCLUSIVE_FULLSCREEN) or (get_window().mode == Window.MODE_FULLSCREEN))
 	
 func save_settings():
-	var f = File.new()
-	f.open("user://settings.dat", File.WRITE)
+	var f = FileAccess.open("user://settings.dat", FileAccess.WRITE)
+	
 	var settings_data = {
 		"card_design" : Globals.card_design,
 		"bkg_color" : Globals.bkg_color
@@ -45,11 +45,11 @@ func _on_Button_pressed(button_name):
 
 func _on_Button_hovered(button):
 	var tw = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
-	tw.tween_property(button, "rect_scale", Vector2(1.25, 1.25), 0.1)
+	tw.tween_property(button, "scale", Vector2(1.25, 1.25), 0.1)
 	
 func _on_Button_unhovered(button):
 	var tw = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
-	tw.tween_property(button, "rect_scale", Vector2.ONE, 0.1)
+	tw.tween_property(button, "scale", Vector2.ONE, 0.1)
 
 func _on_Color_gui_input(event):
 	if event is InputEventMouseButton:
@@ -69,5 +69,5 @@ func _on_Options_visibility_changed():
 
 
 func _on_FullScreen_toggled(button_pressed):
-	OS.window_fullscreen = button_pressed
+	get_window().mode = Window.MODE_EXCLUSIVE_FULLSCREEN if (button_pressed) else Window.MODE_WINDOWED
 	

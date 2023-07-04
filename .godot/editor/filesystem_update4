@@ -1,0 +1,4 @@
+res://default_env.tres
+res://scenes/game.tscn
+res://scenes/sound_manager.tscn
+res://scripts/game.gd

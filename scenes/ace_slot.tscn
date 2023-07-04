@@ -1,13 +1,13 @@
 [gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://scripts/ace_slot.gd" type="Script" id=1]
-[ext_resource path="res://assets/cards0/Blank.png" type="Texture" id=2]
+[ext_resource path="res://assets/cards0/Blank.png" type="Texture2D" id=2]
 
 [node name="AceSlot" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = -1450.0
-margin_bottom = -690.0
+offset_right = -1450.0
+offset_bottom = -690.0
 size_flags_horizontal = 14
 size_flags_vertical = 14
 script = ExtResource( 1 )

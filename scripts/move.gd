@@ -11,7 +11,7 @@ var was_card_in_play : bool
 var was_card_in_deck : bool
 var was_card_in_pool : bool
 var was_card_added_to_pool : bool
-var deck_flipped : bool
+var deck_flipped_var : bool
 
 var slots : Array
 var deck : Array
@@ -40,16 +40,16 @@ func initialize(_card : Card, _slots : Array, _deck : Array, _pool : Array):
 		position_from = _card.move_start_position
 
 func register_deck_flip():
-	deck_flipped = true
+	deck_flipped_var = true
 		
 func undo():
-	if deck_flipped:
+	if deck_flipped_var:
 		while deck.size() > 0:
 			var _card : Card = deck.pop_back()
 			pool.append(_card)
-			_card.emit_signal("move_to_top")
+			_card.emit_signal("move_before")
 			_card.get_node("CardOuter").texture = load(_card.texture_path)
-			_card.move_to(_card.rect_global_position + Vector2(Globals.MARGIN + Globals.SLOT_WIDTH, 0))
+			_card.move_to(_card.global_position + Vector2(Globals.MARGIN + Globals.SLOT_WIDTH, 0))
 		emit_signal("deck_flipped")
 		
 	else:	

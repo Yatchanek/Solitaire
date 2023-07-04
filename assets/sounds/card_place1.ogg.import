@@ -1,15 +1,19 @@
 [remap]
 
-importer="ogg_vorbis"
-type="AudioStreamOGGVorbis"
-path="res://.import/card_place1.ogg-523e2619d60351fc88faf8d082cef767.oggstr"
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://d2k043346k23y"
+path="res://.godot/imported/card_place1.ogg-523e2619d60351fc88faf8d082cef767.oggvorbisstr"
 
 [deps]
 
 source_file="res://assets/sounds/card_place1.ogg"
-dest_files=[ "res://.import/card_place1.ogg-523e2619d60351fc88faf8d082cef767.oggstr" ]
+dest_files=["res://.godot/imported/card_place1.ogg-523e2619d60351fc88faf8d082cef767.oggvorbisstr"]
 
 [params]
 
 loop=false
-loop_offset=0
+loop_offset=0.0
+bpm=0.0
+beat_count=0
+bar_beats=4
