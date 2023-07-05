@@ -6,7 +6,7 @@ var frame_scene = preload("res://scenes/frame.tscn")
 var hint_frame_scene = preload("res://scenes/hint_frame.tscn")
 
 
-var cards : PoolVector2Array = []
+var cards : PackedVector2Array = []
 var pool : Array = []
 var slots : Array = []
 var deck : Array = []
@@ -17,7 +17,7 @@ var moves_to_undo : Array = []
 var can_move : bool = true
 var dragged_from : int = -1
 var card_drawn_from_pool : bool = false
-var game_won = false
+var game_won_var = false
 
 var current_move : Move
 var current_state : int
@@ -35,15 +35,15 @@ signal game_won
 
 func _input(event):
 	if event is InputEventKey:
-		if event.pressed and event.scancode == KEY_ENTER:
+		if event.pressed and event.keycode == KEY_ENTER:
 			restart()
-		if event.pressed and event.scancode == KEY_SPACE:
+		if event.pressed and event.keycode == KEY_SPACE:
 			auto_put_on_foundation()
-		if event.pressed and event.scancode == KEY_H:
+		if event.pressed and event.keycode == KEY_H:
 			find_hint()
-		if event.pressed and event.scancode == KEY_Z:
+		if event.pressed and event.keycode == KEY_Z:
 			undo_move()
-		if event.pressed and event.scancode == KEY_ESCAPE:
+		if event.pressed and event.keycode == KEY_ESCAPE:
 			save_layout()
 			emit_signal("back_to_menu")
 
@@ -52,7 +52,7 @@ func _ready():
 
 func restart():
 	reset()
-	yield(get_tree(), "idle_frame")
+	await get_tree().get_first_node_in_group("")
 	new_game()
 
 func reset():
@@ -64,7 +64,7 @@ func reset():
 		card.queue_free()
 	remove_frames()
 	highlighted_cards = []
-	game_won = false
+	game_won_var = false
 	
 func new_game():
 	create_deck()
@@ -73,10 +73,10 @@ func new_game():
 	$HintTimer.start()
 
 func continue_game():
-	var f = File.new()
+	var f = FileAccess.open("user://save.sav", FileAccess.READ)
 	if f.file_exists("user://save.sav"):
-		var err = f.open("user://save.sav", File.READ)
-		if err == OK:
+		
+		if f.get_error() == OK:
 			var game_data = f.get_var()
 			f.close()
 			create_slots()
@@ -115,8 +115,7 @@ func save_layout():
 	game_data["deck"] = deck_data
 	game_data["pool"] = pool_data
 	
-	var f = File.new()
-	f.open("user://save.sav", File.WRITE)
+	var f = FileAccess.open("user://save.sav", FileAccess.WRITE) 
 	f.store_var(game_data)
 	f.close()
 
@@ -137,7 +136,7 @@ func serialize_card(card : Card):
 	return card_data
 
 func deserialize_card(card_data : Dictionary):
-	var card : Card = card_scene.instance()
+	var card : Card = card_scene.instantiate()
 	add_child(card)
 	card.initialize(card_data.data)
 	card.is_in_play = card_data.is_in_play
@@ -158,27 +157,30 @@ func restore_layout(game_data):
 			var card = deserialize_card(saved_slot[j])
 			target_slot.cards.append(card)
 			if i < Globals.COLUMNS:
-				card.rect_position = target_slot.position - rect_position + Vector2.DOWN * j * Globals.OFFSET
+				card.position = target_slot.position - position + Vector2.DOWN * j * Globals.OFFSET
 			else:
-				card.rect_position = target_slot.position - rect_position
+				card.position = target_slot.position - position
 			if j > 0:
 				target_slot.cards[j - 1].lower_card = card
 			if i >= Globals.COLUMNS:
-				card.emit_signal("move_to_top")
+				card.emit_signal("move_before")
 			
 	for _card in game_data.deck:
 		var card = deserialize_card(_card)
-		card.rect_position = Vector2(Globals.MARGIN, 20)
+		card.position = Vector2(Globals.MARGIN, 20)
 		deck.append(card)
 	
 	for _card in game_data.pool:
 		var card = deserialize_card(_card)
-		card.rect_position = Vector2(2 * Globals.MARGIN + Globals.SLOT_WIDTH, 20)
+		card.position = Vector2(2 * Globals.MARGIN + Globals.SLOT_WIDTH, 20)
 		pool.append(card)
 	update_pool_layout()	
 		
-	var dir = Directory.new()
-	dir.remove("user://save.sav")
+	var dir = DirAccess.open("user://save.sav")
+	if dir != null:
+		dir.remove("user://save.sav")
+	#var dir = DirAccess.open("user://save.sav")
+	
 
 func undo_move():
 	if moves_to_undo.size() == 0:
@@ -195,25 +197,25 @@ func create_slots():
 	slots.resize(Globals.COLUMNS)
 	for i in Globals.COLUMNS:
 		var slot = CardSlot.new()
-		slot.connect("card_placed", self, "_on_Card_changed_slots")
-		slot.connect("card_rejected", self, "_on_Card_move_started")
-		slot.initialize(rect_position + Vector2(Globals.MARGIN + i * (Globals.SLOT_WIDTH + Globals.MARGIN), 250), false, i)
+		slot.connect("card_placed", Callable(self, "_on_Card_changed_slots"))
+		slot.connect("card_rejected", Callable(self, "_on_Card_move_started"))
+		slot.initialize(position + Vector2(Globals.MARGIN + i * (Globals.SLOT_WIDTH + Globals.MARGIN), 250), false, i)
 		slots[i] = slot
 	
 	for i in Globals.ACE_SLOTS:
-		var slot = slot_scene.instance()
-		slot.rect_position = Vector2(Globals.MARGIN + (i + 3) * (Globals.SLOT_WIDTH + Globals.MARGIN), 20)
-		slot.rect_size = Vector2(Globals.SLOT_WIDTH, Globals.SLOT_HEIGHT)
+		var slot = slot_scene.instantiate()
+		slot.position = Vector2(Globals.MARGIN + (i + 3) * (Globals.SLOT_WIDTH + Globals.MARGIN), 20)
+		slot.size = Vector2(Globals.SLOT_WIDTH, Globals.SLOT_HEIGHT)
 		add_child(slot)
 		var ace_slot = CardSlot.new()
-		ace_slot.connect("card_placed", self, "_on_Card_changed_slots")
-		ace_slot.connect("card_rejected", self, "_on_Card_move_started")
-		ace_slot.initialize(rect_position + Vector2(Globals.MARGIN + (i + 3) * (Globals.SLOT_WIDTH + Globals.MARGIN), 20), true, i + Globals.COLUMNS)
+		ace_slot.connect("card_placed", Callable(self, "_on_Card_changed_slots"))
+		ace_slot.connect("card_rejected", Callable(self, "_on_Card_move_started"))
+		ace_slot.initialize(position + Vector2(Globals.MARGIN + (i + 3) * (Globals.SLOT_WIDTH + Globals.MARGIN), 20), true, i + Globals.COLUMNS)
 		slots.append(ace_slot)
 	
-	var begin_slot = slot_scene.instance()
-	begin_slot.rect_position = Vector2(Globals.MARGIN, 20)
-	begin_slot.connect("gui_input", self, "_on_Begin_slot_clicked")
+	var begin_slot = slot_scene.instantiate()
+	begin_slot.position = Vector2(Globals.MARGIN, 20)
+	begin_slot.connect("gui_input", Callable(self, "_on_Begin_slot_clicked"))
 	add_child(begin_slot)
 	move_child(begin_slot, 0)
 
@@ -223,15 +225,15 @@ func deal_cards():
 	while cards.size() > 0:
 		var idx = randi() % cards.size()
 		var card_data = cards[idx]
-		var card = card_scene.instance()
+		var card = card_scene.instantiate()
 		card.initialize(card_data)
 		card.set_state(card.State.IN_DECK, card.current_state)
-		cards.remove(idx)	
-		card.rect_position = Vector2(Globals.MARGIN, 20) #+ Vector2(randi() % 10, 0) * pow(-1, randi() % 2)
+		cards.remove_at(idx)	
+		card.position = Vector2(Globals.MARGIN, 20) #+ Vector2(randi() % 10, 0) * pow(-1, randi() % 2)
 		deck.append(card)
 		add_child(card)
 	
-	yield(get_tree(), "idle_frame")
+	await get_tree().get_first_node_in_group("")
 			
 	for row in Globals.COLUMNS:
 		for col in Globals.COLUMNS:
@@ -240,8 +242,8 @@ func deal_cards():
 			var card : Card = deck.pop_back()
 
 			#card.rect_position = Vector2(Globals.MARGIN + col * (Globals.SLOT_WIDTH + Globals.MARGIN), 250 + Globals.OFFSET * row)
-			card.move_to(rect_position + Vector2(Globals.MARGIN + col * (Globals.SLOT_WIDTH + Globals.MARGIN), 250 + Globals.OFFSET * row))
-			card.emit_signal("move_to_top")
+			card.move_to(position + Vector2(Globals.MARGIN + col * (Globals.SLOT_WIDTH + Globals.MARGIN), 250 + Globals.OFFSET * row))
+			card.emit_signal("move_before")
 
 			slots[col].add_card_on_deal(card)
 			card.slot_idx = col
@@ -249,7 +251,7 @@ func deal_cards():
 				card.set_state(card.State.IDLE, card.current_state)
 			else: 
 				card.set_state(card.State.NOT_FLIPPED, card.current_state)					
-			yield(get_tree(), "idle_frame")
+			await get_tree().get_first_node_in_group("")
 
 	update_label()
 	#current_state = State.PLAYING
@@ -258,15 +260,15 @@ func deal_cards():
 func determine_slot(_position):
 	var slot : int
 	if _position.y < 250:
-		if _position.x < rect_position.x + 3 * (Globals.SLOT_WIDTH + Globals.MARGIN):
+		if _position.x < position.x + 3 * (Globals.SLOT_WIDTH + Globals.MARGIN):
 			slot =  -1
 		else:
-			slot =  Globals.COLUMNS + floor((_position.x - rect_position.x - Globals.MARGIN - 3 * (Globals.SLOT_WIDTH + Globals.MARGIN)) / (Globals.SLOT_WIDTH + Globals.MARGIN))	
+			slot =  Globals.COLUMNS + floor((_position.x - position.x - Globals.MARGIN - 3 * (Globals.SLOT_WIDTH + Globals.MARGIN)) / (Globals.SLOT_WIDTH + Globals.MARGIN))	
 	else:
-		if _position.x > rect_position.x + Globals.COLUMNS * (Globals.SLOT_WIDTH + Globals.MARGIN) + Globals.SLOT_WIDTH:
+		if _position.x > position.x + Globals.COLUMNS * (Globals.SLOT_WIDTH + Globals.MARGIN) + Globals.SLOT_WIDTH:
 			slot =  -2
 		else:
-			slot =  floor((_position.x - Globals.MARGIN - rect_position.x) / (Globals.SLOT_WIDTH + Globals.MARGIN))
+			slot =  floor((_position.x - Globals.MARGIN - position.x) / (Globals.SLOT_WIDTH + Globals.MARGIN))
 
 	return slot
 
@@ -294,8 +296,8 @@ func restore_deck():
 	current_move = Move.new()
 	current_move.initialize(null, slots, deck, pool)
 	current_move.register_deck_flip()
-	current_move.connect("deck_flipped", self, "update_pool_layout")
-	current_move.connect("deck_flipped", self, "update_label")
+	current_move.connect("deck_flipped", Callable(self, "update_pool_layout"))
+	current_move.connect("deck_flipped", Callable(self, "update_label"))
 	moves_to_undo.append(current_move)
 	if moves_to_undo.size() > 20:
 		moves_to_undo.pop_front()
@@ -303,7 +305,7 @@ func restore_deck():
 	while pool.size():
 		var card : Card = pool.pop_back()
 		deck.append(card)
-		card.move_to(rect_position + Vector2(Globals.MARGIN, 20))
+		card.move_to(position + Vector2(Globals.MARGIN, 20))
 
 
 		
@@ -337,7 +339,7 @@ func auto_put_on_foundation():
 				
 	if move_found:
 		remove_frames()
-		yield(get_tree(), "idle_frame")
+		await get_tree().get_first_node_in_group("")
 		auto_put_on_foundation()
 
 func check_for_win():
@@ -348,7 +350,7 @@ func check_for_win():
 			return
 	if win:
 		can_move = false
-		game_won = true
+		game_won_var = true
 		emit_signal("game_won")
 		current_state = State.GAME_END
 
@@ -374,15 +376,15 @@ func update_label():
 	
 func update_pool_layout():
 	if pool.size() > 2:
-		pool[pool.size() - 2].move_to(rect_position + Vector2(3 * Globals.MARGIN  + Globals.SLOT_WIDTH, 20))
-		pool[pool.size() - 2].emit_signal("move_to_top")
-		pool[pool.size() - 1].move_to(rect_position + Vector2(4 * Globals.MARGIN  + Globals.SLOT_WIDTH, 20))
-		pool[pool.size() - 1].emit_signal("move_to_top")
+		pool[pool.size() - 2].move_to(position + Vector2(3 * Globals.MARGIN  + Globals.SLOT_WIDTH, 20))
+		pool[pool.size() - 2].emit_signal("move_before")
+		pool[pool.size() - 1].move_to(position + Vector2(4 * Globals.MARGIN  + Globals.SLOT_WIDTH, 20))
+		pool[pool.size() - 1].emit_signal("move_before")
 		for i in range(pool.size() - 2):
-			pool[i].rect_position = Vector2(2 * Globals.MARGIN + Globals.SLOT_WIDTH, 20)	
+			pool[i].position = Vector2(2 * Globals.MARGIN + Globals.SLOT_WIDTH, 20)	
 	elif pool.size() == 2:
-		pool[pool.size() - 1].move_to(rect_position + Vector2(3 * Globals.MARGIN  + Globals.SLOT_WIDTH, 20))
-		pool[pool.size() - 1].emit_signal("move_to_top")		
+		pool[pool.size() - 1].move_to(position + Vector2(3 * Globals.MARGIN  + Globals.SLOT_WIDTH, 20))
+		pool[pool.size() - 1].emit_signal("move_before")		
 	
 func find_hint():
 	remove_frames()
@@ -467,12 +469,12 @@ func show_hint(begin_card : Card, target_card : Card, target_slot : CardSlot):
 		if target_card:
 			target_card.toggle_hint()
 		elif target_slot:
-			var frame = hint_frame_scene.instance()
-			frame.position = target_slot.position - rect_position
+			var frame = hint_frame_scene.instantiate()
+			frame.position = target_slot.position - position
 			frame.add_to_group("Frames")
 			add_child(frame)
 	else:
-		var frame = hint_frame_scene.instance()
+		var frame = hint_frame_scene.instantiate()
 		frame.position = Vector2(Globals.MARGIN, 20)
 		frame.add_to_group("Frames")
 		add_child(frame)
@@ -482,7 +484,7 @@ func _on_Card_in_pool(_card : Card):
 	var pool_size = pool.size()
 	var target_pos : Vector2
 	var offset = min(pool_size, 2)
-	target_pos = rect_position + Vector2((2 + offset) * Globals.MARGIN  + Globals.SLOT_WIDTH, 20)
+	target_pos = position + Vector2((2 + offset) * Globals.MARGIN  + Globals.SLOT_WIDTH, 20)
 	if pool_size > 2:
 		pool[pool_size - 2].move_to(target_pos - Vector2(2 * Globals.MARGIN, 0))
 		pool[pool_size - 1].move_to(target_pos - Vector2(Globals.MARGIN, 0))
@@ -494,7 +496,7 @@ func _on_Card_in_pool(_card : Card):
 	if _card in deck:
 		current_move = Move.new()
 		current_move.initialize(_card, slots, deck, pool)
-		current_move.connect("card_back_in_pool", self, "update_pool_layout")
+		current_move.connect("card_back_in_pool", Callable(self, "update_pool_layout"))
 		deck.erase(_card)
 		moves_to_undo.append(current_move)
 		if moves_to_undo.size() > 20:
@@ -517,7 +519,7 @@ func _on_Card_move_to_top(_card):
 func _on_Card_dragged(_card, _position):
 	current_move = Move.new()
 	current_move.initialize(_card, slots, deck, pool)
-	current_move.connect("card_back_in_pool", self, "update_pool_layout")
+	current_move.connect("card_back_in_pool", Callable(self, "update_pool_layout"))
 	if _card.slot_idx >= 0:
 		var slot : CardSlot = slots[_card.slot_idx]
 		slot.remove_card(_card)
@@ -558,10 +560,10 @@ func _on_Put_on_foundation(_card : Card):
 	var suitable_slot : int = check_against_ace_slots(_card)
 	if suitable_slot >= Globals.COLUMNS:
 		$HintTimer.stop()
-		_card.move_start_position = _card.rect_global_position
+		_card.move_start_position = _card.global_position
 		current_move = Move.new()
 		current_move.initialize(_card, slots, deck, pool)
-		current_move.connect("card_back_in_pool", self, "update_pool_layout")
+		current_move.connect("card_back_in_pool", Callable(self, "update_pool_layout"))
 		if _card in pool:
 			pool.resize(pool.size() - 1)
 			card_drawn_from_pool = true
@@ -578,7 +580,7 @@ func _on_Put_on_foundation(_card : Card):
 	
 func _on_Begin_slot_clicked(event):
 	if event is InputEventMouseButton:
-		if event.pressed and event.button_index == BUTTON_LEFT:
+		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			restore_deck()
 
 func _on_Card_move_started():
@@ -604,8 +606,8 @@ func _on_Card_move_ended(_card):
 		if _card.slot_idx >= Globals.COLUMNS or _card.slot_idx != _card.dragged_from:
 			flip_card(_card.dragged_from)
 		if _card.slot_idx >= Globals.COLUMNS:
-			var frame = frame_scene.instance()
-			frame.position = _card.rect_position + Vector2(Globals.SLOT_WIDTH, Globals.SLOT_HEIGHT) * 0.5
+			var frame = frame_scene.instantiate()
+			frame.position = _card.position + Vector2(Globals.SLOT_WIDTH, Globals.SLOT_HEIGHT) * 0.5
 			add_child(frame)
 			check_for_win()
 		$HintTimer.start()
@@ -615,5 +617,5 @@ func _on_Card_move_ended(_card):
 
 
 func _on_HintTimer_timeout():
-	if !game_won and slots.size() > 0:
+	if !game_won_var and slots.size() > 0:
 		find_hint()

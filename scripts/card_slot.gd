@@ -47,7 +47,7 @@ func add_card(_card : Card, _position : Vector2, by_doubleclick : bool = false):
 				cards.append(_card)
 				_card.is_in_play = true
 				if by_doubleclick:
-					_card.emit_signal("move_to_top")
+					_card.emit_signal("move_before")
 				_card.move_to(self.position)
 				SoundManager.play_sound(SoundManager.CARD_SLIDE_1)
 				if _card.slot_idx != self.index:
@@ -62,7 +62,7 @@ func add_card(_card : Card, _position : Vector2, by_doubleclick : bool = false):
 				cards.append(_card)
 				_card.is_in_play = true
 				if by_doubleclick:
-					_card.emit_signal("move_to_top")
+					_card.emit_signal("move_before")
 				_card.move_to(self.position)
 				SoundManager.play_sound(SoundManager.CARD_SLIDE_1)		
 				if _card.slot_idx != self.index:
@@ -95,7 +95,7 @@ func add_card(_card : Card, _position : Vector2, by_doubleclick : bool = false):
 				if last_card != _card:
 					last_card.lower_card = _card
 				_card.is_in_play = true
-				_card.move_to(last_card.rect_global_position + Vector2.DOWN * Globals.OFFSET)
+				_card.move_to(last_card.global_position + Vector2.DOWN * Globals.OFFSET)
 				SoundManager.play_sound(SoundManager.CARD_SLIDE_1)
 				if _card.slot_idx != self.index:
 					emit_signal("card_placed", _card, self)
